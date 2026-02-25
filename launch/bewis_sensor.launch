@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- 北微传感器驱动启动文件 -->
+
+  <!-- 参数配置 -->
+  <arg name="serial_port1" default="/dev/ttyUSB1" />
+  <arg name="serial_port2" default="/dev/ttyUSB2" />
+  <arg name="serial_port3" default="/dev/ttyUSB3" />
+  <arg name="baudrate" default="115200" />
+  <arg name="use_rviz" default="false" />
+
+  <!-- 启动传感器节点 -->
+  <node name="bewis_sensor_node"
+        pkg="bewis_ros_driver"
+        type="bewis_sensor"
+        output="screen">
+    <!-- 可以在这里添加ROS参数 -->
+  </node>
+
+  <!-- 可视化工具 (可选) -->
+  <node name="rviz"
+        pkg="rviz"
+        type="rviz"
+        args="-d $(find bewis_ros_driver)/rviz/sensor_view.rviz"
+        if="$(arg use_rviz)"
+        required="false" />
+
+</launch>

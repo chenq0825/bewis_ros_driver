@@ -1,0 +1,17 @@
+<launch>
+  <!-- 启动Bewis传感器驱动 -->
+  <node name="bewis_sensor_node" pkg="bewis_ros_driver" type="bewis_sensor" output="screen">
+    <param name="port" value="/dev/ttyUSB0"/>
+  </node>
+
+  <!-- 启动欧拉角显示工具 -->
+  <node name="show_euler_angles" pkg="bewis_ros_driver" type="show_euler_angles.py" output="screen">
+    <param name="imu_topic" value="/sensor1/imu"/>
+  </node>
+
+  <!-- 可选：启动RViz可视化 -->
+  <arg name="use_rviz" default="false"/>
+  <group if="$(arg use_rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find bewis_ros_driver)/rviz/sensor_view.rviz" required="true"/>
+  </group>
+</launch>

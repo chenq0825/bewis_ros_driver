@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(serialtest)
+project(bewis_ros_driver)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   serial
   tf
+  sensor_msgs
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -162,10 +164,11 @@ include_directories(include ${catkin_INCLUDE_DIRS} "/usr/include/eigen3")
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+  scripts/quaternion_euler_converter.py
+  scripts/show_euler_angles.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -189,11 +192,14 @@ include_directories(include ${catkin_INCLUDE_DIRS} "/usr/include/eigen3")
 # )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-# install(FILES
-#   # myfile1
-#   # myfile2
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+  PATTERN ".svn" EXCLUDE
+)
+install(DIRECTORY rviz/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz
+  PATTERN ".svn" EXCLUDE
+)
 
 #############
 ## Testing ##
@@ -208,5 +214,17 @@ include_directories(include ${catkin_INCLUDE_DIRS} "/usr/include/eigen3")
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(serialtest src/serialtest.cpp)
-target_link_libraries(serialtest  ${catkin_LIBRARIES})
+add_executable(bewis_sensor src/bewis_sensor.cpp src/message_extractor.cpp src/angle_process.cpp)
+target_link_libraries(bewis_sensor  ${catkin_LIBRARIES})
+
+# 串口测试工具（用于调试）
+add_executable(test_serial src/test_serial.cpp)
+target_link_libraries(test_serial ${catkin_LIBRARIES})
+
+# 传感器唤醒工具
+add_executable(wake_sensor src/wake_sensor.cpp)
+target_link_libraries(wake_sensor ${catkin_LIBRARIES})
+
+# 四元数转换测试工具
+add_executable(test_quaternion src/test_quaternion.cpp)
+target_link_libraries(test_quaternion ${catkin_LIBRARIES})
